@@ -1,7 +1,7 @@
 # DIFT
 Finetuning Generative Large Language Models with Discrimination Instructions for Knowledge Graph Completion, ISWC 2024
 
-## requirements
+## Requirements
     pytorch==2.1.0
     bitsandbytes==0.40.0
     transformers==4.31.0
@@ -29,3 +29,75 @@ download from [here](https://drive.google.com/file/d/1gWX97jtILkf960f_zBbkLoIRpO
 `checkpoint_dir` is the path of the folder to save the PEFT model, like "./output/FB15K237/2024xxxx-xxxxxx/checkpoint-xxxx/adapter_model"
 
 [checkpoints](https://drive.google.com/file/d/1YH6PUUl81i9gHpboK9SQAHw3zVOuVgzI/view?usp=drive_link) of the reported results are also provided.
+
+## QA Dataset Adaptation (NEW)
+
+DIFT can now be adapted for Question-Answering tasks! The QA adapter converts standard QA datasets to DIFT format with knowledge injection support.
+
+### Quick Start with QA Datasets
+
+1. **Prepare your QA dataset** in JSON format:
+```json
+[
+    {
+        "question": "What is the capital of France?",
+        "answer": "Paris",
+        "candidates": ["Paris", "London", "Berlin"],
+        "context": "Optional context..."
+    }
+]
+```
+
+2. **Convert to DIFT format**:
+```bash
+python qa_data_construct.py \
+    --llm_dir /path/to/llama-model \
+    --input_file your_qa_dataset.json \
+    --output_dir ./qa_output
+```
+
+3. **Prepare embeddings** (for KGELlama model):
+```bash
+python qa_utils.py \
+    --train_path ./qa_output/train.json \
+    --valid_path ./qa_output/valid.json \
+    --test_path ./qa_output/test.json \
+    --output_dir ./qa_output/embeddings
+```
+
+4. **Train with DIFT**:
+```bash
+# Option 1: Standard training
+python train.py \
+    --model_class LlamaForCausalLM \
+    --train_path ./qa_output/train.json \
+    --eval_path ./qa_output/valid.json \
+    --test_path ./qa_output/test.json \
+    ...
+
+# Option 2: With knowledge injection
+python train.py \
+    --model_class KGELlama \
+    --kge_model embeddings \
+    --dataset ./qa_output/embeddings \
+    --train_path ./qa_output/train.json \
+    ...
+```
+
+### Full Documentation
+
+See [QA_ADAPTER_README.md](QA_ADAPTER_README.md) for complete documentation, examples, and advanced usage.
+
+### Testing
+
+Run the validation and tests:
+```bash
+# Validate QA dataset format
+python validate_qa_adapter.py
+
+# Run unit tests
+python test_qa_adapter.py
+
+# Run end-to-end integration test
+python test_e2e_qa_adapter.py
+```

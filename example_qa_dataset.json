@@ -1,0 +1,29 @@
+[
+    {
+        "question": "What is the capital of France?",
+        "answer": "Paris",
+        "candidates": ["Paris", "London", "Berlin", "Madrid", "Rome"]
+    },
+    {
+        "question": "Who wrote the play 'Romeo and Juliet'?",
+        "answer": "William Shakespeare",
+        "candidates": ["William Shakespeare", "Charles Dickens", "Mark Twain", "Jane Austen", "F. Scott Fitzgerald"]
+    },
+    {
+        "question": "What is the largest planet in our solar system?",
+        "answer": "Jupiter",
+        "candidates": ["Earth", "Mars", "Jupiter", "Saturn", "Neptune"],
+        "context": "The solar system consists of the Sun and the celestial objects that orbit it, including eight planets."
+    },
+    {
+        "question": "In what year did World War II end?",
+        "answer": "1945",
+        "candidates": ["1943", "1944", "1945", "1946", "1947"]
+    },
+    {
+        "question": "What is the chemical symbol for gold?",
+        "answer": "Au",
+        "candidates": ["Ag", "Au", "Go", "Gd", "Fe"],
+        "context": "Gold is a chemical element with unique properties, valued for its rarity and usefulness."
+    }
+]
