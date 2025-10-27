@@ -10,7 +10,8 @@ from typing import List, Dict
 
 def create_dummy_embeddings(num_queries: int, num_entities: int, 
                            embedding_dim: int = 768, 
-                           output_dir: str = None):
+                           output_dir: str = None,
+                           seed: int = 42):
     """
     Create dummy embeddings for QA datasets that don't have KGE embeddings.
     
@@ -22,11 +23,15 @@ def create_dummy_embeddings(num_queries: int, num_entities: int,
         num_entities: Number of unique entities (candidates) in the dataset
         embedding_dim: Dimension of the embeddings (default: 768 for BERT-like models)
         output_dir: Directory to save the embeddings. If None, returns the tensors.
+        seed: Random seed for reproducibility (default: 42)
     
     Returns:
         If output_dir is None: tuple of (query_embeddings, entity_embeddings)
         Otherwise: None (saves to disk)
     """
+    # Set random seed for reproducibility
+    torch.manual_seed(seed)
+    
     # Initialize random embeddings
     query_embeddings = torch.randn(num_queries, embedding_dim)
     entity_embeddings = torch.randn(num_entities, embedding_dim)
@@ -78,7 +83,7 @@ def compute_qa_embedding_requirements(data_files: List[str]) -> Dict:
 
 
 def prepare_qa_embeddings(train_path: str, valid_path: str, test_path: str,
-                         output_dir: str, embedding_dim: int = 768):
+                         output_dir: str, embedding_dim: int = 768, seed: int = 42):
     """
     Prepare dummy embeddings for a QA dataset.
     
@@ -92,6 +97,7 @@ def prepare_qa_embeddings(train_path: str, valid_path: str, test_path: str,
         test_path: Path to test data JSON file
         output_dir: Directory to save the embeddings
         embedding_dim: Dimension of the embeddings
+        seed: Random seed for reproducibility
     """
     print("Analyzing QA dataset...")
     requirements = compute_qa_embedding_requirements([train_path, valid_path, test_path])
@@ -105,7 +111,8 @@ def prepare_qa_embeddings(train_path: str, valid_path: str, test_path: str,
         num_queries=requirements['num_queries'],
         num_entities=requirements['num_entities'],
         embedding_dim=embedding_dim,
-        output_dir=output_dir
+        output_dir=output_dir,
+        seed=seed
     )
     
     print(f"\n✓ QA embeddings prepared successfully!")
@@ -123,6 +130,8 @@ if __name__ == '__main__':
                        help='Output directory for embeddings')
     parser.add_argument('--embedding_dim', type=int, default=768,
                        help='Embedding dimension (default: 768)')
+    parser.add_argument('--seed', type=int, default=42,
+                       help='Random seed for reproducibility (default: 42)')
     
     args = parser.parse_args()
     
@@ -131,5 +140,6 @@ if __name__ == '__main__':
         valid_path=args.valid_path,
         test_path=args.test_path,
         output_dir=args.output_dir,
-        embedding_dim=args.embedding_dim
+        embedding_dim=args.embedding_dim,
+        seed=args.seed
     )

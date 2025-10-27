@@ -50,9 +50,15 @@ def test_complete_pipeline():
             candidates = entry.get('candidates', [])
             
             # Create DIFT format entry
+            candidates_str = '; '.join([f"{c} [ENTITY]" for c in candidates])
+            prompt = (
+                f"Question: {question} [QUERY]\n\n"
+                f"Select the best answer from the list: [{candidates_str}]\n\n"
+                "[Answer]: "
+            )
+            
             dift_entry = {
-                'input': f"Question: {question} [QUERY]\n\nSelect the best answer from the list: [" + 
-                        '; '.join([f"{c} [ENTITY]" for c in candidates]) + "]\n\n[Answer]: ",
+                'input': prompt,
                 'output': answer,
                 'query_id': idx,
                 'entity_ids': list(range(len(candidates))) if candidates else [0],
